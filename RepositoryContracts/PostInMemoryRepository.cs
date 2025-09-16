@@ -5,16 +5,16 @@ namespace RepositoryContracts
 {
     public class PostInMemoryRepository : IPostRepository
     {
-        List<Post> posts;
+        public List<Post> posts;
 
-        public Task<Post> AddAsync(Post post)
+        public Task<Post> AddPostAsync(Post post)
         {
             post.Id = posts.Any() ? posts.Max(p => p.Id) + 1 : 1;
             posts.Add(post);
             return Task.FromResult(post);
         }
 
-        public Task UpdateAsync(Post post)
+        public Task UpdatePostAsync(Post post)
         {
             Post? existingPost = posts.SingleOrDefault(p => p.Id == post.Id);
             if (existingPost is null)
@@ -27,7 +27,7 @@ namespace RepositoryContracts
             return Task.CompletedTask;
         }
 
-        public Task DeleteAsync(int id)
+        public Task DeletePostAsync(int id)
         {
             Post? postToRemove = posts.SingleOrDefault(p => p.Id == id);
             if (postToRemove is null)
