@@ -7,6 +7,15 @@ namespace RepositoryContracts
     {
         public List<Post> posts;
 
+        public PostInMemoryRepository()
+        {
+            posts = new List<Post>
+            {
+                new Post("reditgold pls","mom sky much sad +10000 karma plz"){Id = 1,UserId = 1},
+                new Post("how to be more annoying","hello i drive bmw im very loud and obnoxious, how to be even more annoying, i already removed my muffler XD, what else could I do?"){Id = 2,UserId = 2}
+            };
+        }
+
         public Task<Post> AddPostAsync(Post post)
         {
             post.Id = posts.Any() ? posts.Max(p => p.Id) + 1 : 1;

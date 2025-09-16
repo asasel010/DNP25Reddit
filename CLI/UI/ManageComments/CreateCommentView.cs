@@ -16,6 +16,6 @@ public class CreateCommentView
     {
         Comment comment = new Comment(userId, postId, body);
         Comment created = await commentRepository.AddCommentAsync(comment);
-        Console.WriteLine($"Comment added successfully, id: {created.Id}");
+        Console.WriteLine($"Comment added successfully, comment id: {created.Id}");
     }
 }

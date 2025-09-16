@@ -16,6 +16,6 @@ public class CreateUserView
     {
         User user = new User(name, password);
         User created = await userRepository.AddUserAsync(user);
-        Console.WriteLine($"User {name} created successfully, id: {created.Id}");
+        Console.WriteLine($"User {name} created successfully, user id: {created.Id}");
     }
 }

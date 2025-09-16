@@ -7,6 +7,15 @@ namespace RepositoryContracts
     {
         public List<Comment> comments;
 
+        public CommentInMemoryRepository()
+        {
+            comments = new List<Comment>
+            {
+                new Comment("have you heard of the finnish hospital?"){Id = 1, UserId = 3, PostId = 2},
+                new Comment("wholesome 100 keanuchunger deluxe"){Id = 2, UserId = 3, PostId = 1}
+            };
+        }
+
         public Task<Comment> AddCommentAsync(Comment comment)
         {
             comment.Id = comments.Any() ? comments.Max(p => p.Id) + 1 : 1;

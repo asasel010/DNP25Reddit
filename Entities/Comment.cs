@@ -13,6 +13,11 @@
             PostId = postId;
             Body = body;
         }
+
+        public Comment(string body)
+        {
+            Body = body;
+        }
         
     }
 }

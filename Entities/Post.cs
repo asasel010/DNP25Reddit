@@ -13,5 +13,11 @@
             Title = title;
             Body = body;
         }
+
+        public Post(string title, string body)
+        {
+            Title = title;
+            Body = body;
+        }
     }
 }

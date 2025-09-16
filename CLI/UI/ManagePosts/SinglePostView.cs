@@ -18,6 +18,11 @@ public class SinglePostView
     {
         Post post = await postRepository.GetSingleAsync(postId);;
         return post;
-
+    }
+    
+    public async Task<IQueryable<Comment>> ListCommentsAsync()
+    {
+        IQueryable<Comment> comments = commentRepository.GetManyAsync();
+        return comments;
     }
 }

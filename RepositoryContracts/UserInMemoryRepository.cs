@@ -7,6 +7,16 @@ namespace RepositoryContracts
     {
         public List<User> users;
 
+        public UserInMemoryRepository()
+        {
+            users = new List<User>
+            {
+                new User("chungus", "kappa") { Id = 1 },
+                new User("BigBoss", "bmw") { Id = 2 }, 
+                new User("anonguy", "87S#4XD9A*$@&X") { Id = 3 }
+            };
+        }
+
         public Task<User> AddUserAsync(User user)
         {
             user.Id = users.Any() ? users.Max(p => p.Id) + 1 : 1;

@@ -23,7 +23,7 @@ public class CliApp
         Console.WriteLine("Welcome to Karachan 2.0");
         while (true)
         {
-            Console.WriteLine("Choose an option: ");
+            Console.WriteLine("\r\nChoose an option: ");
             Console.WriteLine("1-Add new user, 2-Add new post, 3-Add new comment, 4-View all posts, 5-View posts");
             switch (Console.ReadLine())
             {
@@ -33,7 +33,7 @@ public class CliApp
                     string username = Console.ReadLine();
                     Console.WriteLine("Password: ");
                     string password = Console.ReadLine();
-                    createUserView.AddUserAsync(username, password);
+                    await createUserView.AddUserAsync(username, password);
                     break;
                 case "2":
                     CreatePostView createPostView = new CreatePostView(postRepository);
@@ -43,7 +43,7 @@ public class CliApp
                     string postTitle = Console.ReadLine();
                     Console.WriteLine("Post content: ");
                     string postBody = Console.ReadLine();
-                    createPostView.AddPostAsync(postUserId, postTitle, postBody);
+                    await createPostView.AddPostAsync(postUserId, postTitle, postBody);
                     break;
                 case "3":
                     CreateCommentView createCommentView = new CreateCommentView(commentRepository);
@@ -53,11 +53,11 @@ public class CliApp
                     int commentPostId = int.Parse(Console.ReadLine());
                     Console.WriteLine("Comment content: ");
                     string commentBody = Console.ReadLine();
-                    createCommentView.AddCommentAsync(commentUserId, commentPostId, commentBody);
+                    await createCommentView.AddCommentAsync(commentUserId, commentPostId, commentBody);
                     break;
                 case "4":
                     ListPostsView listPostsView = new ListPostsView(postRepository);
-                    IQueryable<Post> posts = listPostsView.ListPostsAsync().Result;
+                    IQueryable<Post> posts = await listPostsView.ListPostsAsync();
                     Console.WriteLine("Displaying all posts: ");
                     foreach (var post in posts)
                     {
@@ -68,16 +68,19 @@ public class CliApp
                     SinglePostView singlePostView = new SinglePostView(postRepository, commentRepository);
                     Console.WriteLine("Select id of post to view: ");
                     int postId = int.Parse(Console.ReadLine());
-                    Post singlePost = singlePostView.SinglePostAsync(postId).Result;
+                    Post singlePost = await singlePostView.SinglePostAsync(postId);
                     
                     Console.WriteLine(singlePost.Title);
                     Console.WriteLine(singlePost.Body);
         
                     Console.WriteLine("Comments:");
-                    IQueryable<Comment> comments = commentRepository.GetManyAsync();
+                    IQueryable<Comment> comments = await singlePostView.ListCommentsAsync();
                     foreach (Comment comment in comments)
                     {
-                        Console.WriteLine(comment.Body);
+                        if (comment.PostId == postId)
+                        {
+                            Console.WriteLine($">{comment.Body}");
+                        }
                     }
                     break;
                 default:
