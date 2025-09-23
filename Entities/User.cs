@@ -6,6 +6,8 @@
         public string Username { set; get; }
         public string Password { set; get; }
 
+        public User() { }
+
         public User(string username, string password)
         {
             Username = username;

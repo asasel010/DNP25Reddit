@@ -7,6 +7,7 @@
         public int UserId { set; get; }
         public int PostId { set; get; }
 
+        public Comment(){}
         public Comment(int userId, int postId, string body)
         {
             UserId = userId;
