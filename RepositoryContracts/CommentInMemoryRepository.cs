@@ -33,20 +33,6 @@ namespace RepositoryContracts
             
             return Task.FromResult(postToFind);
         }
-        
-        /*public IQueryable<Comment> GetPostCommentsAsync(int id)
-        { 
-            Comment? postToFind = comments.SingleOrDefault(p => p.Id == id);
-            if (postToFind is null)
-            {
-                throw new InvalidOperationException($"Post with ID '{id}' not found");
-            }
-            
-            return comments.AsQueryable(); 
-            return Task.FromResult(postToFind);
-        }*/
-
-
         public IQueryable<Comment> GetManyAsync() { 
             return comments.AsQueryable(); 
         }
