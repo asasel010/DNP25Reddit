@@ -28,22 +28,36 @@ public class CommentFileRepository : ICommentRepository
         return comment;
     }
 
-    public Task<Comment> GetSingleAsync(int id)
+    public async Task<Comment> GetSingleAsync(int id)
     {
-        string commentAsJson = File.ReadAllTextAsync(filePath).Result;
-        Comment comment = JsonSerializer.Deserialize<Comment>(commentAsJson)!;
-        
-        if (comment is null)
-        {
-            throw new InvalidOperationException($"Post with ID '{id}' not found");
-        }
-            
-        return Task.FromResult(comment);
+        string commentsAsJson = await File.ReadAllTextAsync(filePath);
+        List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsAsJson)!;
+        Comment? commentToFind = comments.SingleOrDefault(c => c.Id == id);
+
+        if (commentToFind is null)
+            throw new InvalidOperationException($"Comment with ID '{id}' not found");
+
+        return commentToFind;
     }
+
     public IQueryable<Comment> GetManyAsync()
     {
         string commentsAsJson = File.ReadAllTextAsync(filePath).Result;
         List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsAsJson)!;
         return comments.AsQueryable();
+    }
+
+    public async Task DeleteCommentAsync(int id)
+    {
+        string commentsAsJson = await File.ReadAllTextAsync(filePath);
+        List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsAsJson)!;
+
+        Comment? commentToDelete = comments.SingleOrDefault(c => c.Id == id);
+        if (commentToDelete is null)
+            throw new InvalidOperationException($"Comment with ID '{id}' not found");
+
+        comments.Remove(commentToDelete);
+        commentsAsJson = JsonSerializer.Serialize(comments, new JsonSerializerOptions { WriteIndented = true });
+        await File.WriteAllTextAsync(filePath, commentsAsJson);
     }
 }

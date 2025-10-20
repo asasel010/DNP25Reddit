@@ -36,7 +36,7 @@ public class UserFileRepository : IUserRepository
 
         if (userToFind is null)
         {
-            throw new InvalidOperationException($"user with ID '{id}' not found");
+            throw new InvalidOperationException($"User with ID '{id}' not found");
         }
 
         return userToFind;
@@ -47,5 +47,19 @@ public class UserFileRepository : IUserRepository
         string usersAsJson = File.ReadAllTextAsync(filePath).Result;
         List<User> users = JsonSerializer.Deserialize<List<User>>(usersAsJson)!;
         return users.AsQueryable();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        string usersAsJson = await File.ReadAllTextAsync(filePath);
+        List<User> users = JsonSerializer.Deserialize<List<User>>(usersAsJson)!;
+
+        User? userToDelete = users.SingleOrDefault(u => u.Id == id);
+        if (userToDelete is null)
+            throw new InvalidOperationException($"User with ID '{id}' not found");
+
+        users.Remove(userToDelete);
+        usersAsJson = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
+        await File.WriteAllTextAsync(filePath, usersAsJson);
     }
 }
