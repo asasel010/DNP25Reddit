@@ -3,7 +3,6 @@ using InMemoryRepositories;
 using RepositoryContracts;
 
 var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
 
 builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
@@ -13,6 +12,7 @@ builder.Services.AddScoped<IPostRepository, PostFileRepository>();
 builder.Services.AddScoped<IUserRepository, UserFileRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentFileRepository>();
 
+var app = builder.Build();
 
 app.MapControllers();
 if (!app.Environment.IsDevelopment())

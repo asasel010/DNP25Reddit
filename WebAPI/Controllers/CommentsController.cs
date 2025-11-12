@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebAPI.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("posts/{postId:int}/comments")]
 public class CommentsController : ControllerBase
 {
     private readonly ICommentRepository commentRepo;

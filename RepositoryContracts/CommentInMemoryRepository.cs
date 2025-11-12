@@ -36,5 +36,11 @@ namespace RepositoryContracts
         public IQueryable<Comment> GetManyAsync() { 
             return comments.AsQueryable(); 
         }
+
+        public Task DeleteCommentAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+        
     }
 }

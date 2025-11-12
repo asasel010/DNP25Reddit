@@ -1,0 +1,34 @@
+﻿@page "/add-post"
+@using ApiContracts
+@using BlazorApp.Services
+@inject IPostService PostService
+
+<h3>Create Post</h3>
+
+<EditForm Model="@post" OnValidSubmit="HandleSubmit">
+    <InputText @bind-Value="post.Title" placeholder="Title" />
+    <br/>
+    <InputTextArea @bind-Value="post.Body" placeholder="Body" />
+    <br/>
+    <button type="submit">Add Post</button>
+</EditForm>
+
+<p>@message</p>
+
+@code {
+    private CreatePostDTO post = new() { Title = "", Body = "", AuthorId = 1 };
+    private string message = "";
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            var created = await PostService.AddPostAsync(post);
+            message = $"Post created with ID: {created.Id}";
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+        }
+    }
+}

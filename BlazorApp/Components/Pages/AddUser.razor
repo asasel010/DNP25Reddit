@@ -1,0 +1,39 @@
+﻿@page "/add-user"
+@using ApiContracts
+@using BlazorApp.Services
+@inject IUserService UserService
+
+<h3>Add User</h3>
+
+<EditForm Model="@user" OnValidSubmit="HandleSubmit">
+    <InputText @bind-Value="user.Username" placeholder="Username" />
+    <br/>
+    <InputText @bind-Value="user.Password" type="password" placeholder="Password" />
+    <br/>
+    <button type="submit">Register</button>
+</EditForm>
+
+<p>@message</p>
+
+@code {
+    private CreateUserDTO user = new()
+    {
+        Username = "",
+        Password = ""
+    };
+
+    private string message = "";
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            var createdUser = await UserService.AddUserAsync(user);
+            message = $"User created: {createdUser.Username}";
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+        }
+    }
+}

@@ -38,5 +38,10 @@ namespace RepositoryContracts
         public IQueryable<User> GetManyAsync() { 
             return users.AsQueryable(); 
         }
+
+        public Task DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

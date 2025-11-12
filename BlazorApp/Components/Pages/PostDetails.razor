@@ -1,0 +1,111 @@
+﻿@page "/post/{id:int}"
+@using ApiContracts
+@using BlazorApp.Services
+@using Entities
+@inject IPostService PostService
+@inject ICommentService CommentService
+
+<h3 class="text-xl font-bold mb-3">Post Details</h3>
+<br/>
+
+@if (loading)
+{
+    <p>Loading post details...</p>
+}
+else if (errorMessage is not null)
+{
+    <p class="text-red-600">@errorMessage</p>
+}
+else if (post is null)
+{
+    <p>No post found with this ID.</p>
+}
+else
+{
+    <div class="space-y-3">
+        <h2 class="text-2xl font-semibold">@post.Title</h2><p class="italic text-sm text-gray-500">by Author ID: @post.UserId</p>
+        <p class="text-gray-700">@post.Body</p>
+    </div>
+}
+<br/>
+<h4 class="text-lg font-semibold mb-2">Comments</h4>
+
+@if (comments == null)
+{
+    <p>Loading comments...</p>
+}
+else if (comments.Count == 0)
+{
+    <p>No comments yet.</p>
+}
+else
+{
+    <ul class="list-disc list-inside space-y-1">
+        @foreach (var c in comments)
+        {
+            <li>@c.Body <span class="text-sm text-gray-500">(User @c.AuthorId)</span></li>
+        }
+    </ul>
+}
+
+<div class="mt-6">
+    <h5 class="font-semibold mb-1">Add a comment:</h5>
+    <EditForm Model="@newComment" OnValidSubmit="HandleAddComment">
+        <InputTextArea @bind-Value="newComment.Body" class="border rounded p-2 w-full" placeholder="Write your comment..." /><br/>
+        <button type="submit" class="mt-2 btn btn-primary">
+            Add Comment
+        </button>
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <p class="mt-2">@message</p>
+    }
+</div>
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private Post? post;
+    private bool loading = true;
+    
+    private string? message;
+    private string? errorMessage;
+    
+    private List<CommentDTO>? comments;
+    private CreateCommentDTO newComment = new() { Body = "", PostId = 0, AuthorId = 1 };
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            post = await PostService.GetSingleAsync(id);
+            comments = await CommentService.GetCommentsForPostAsync(id);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error fetching post: {ex.Message}";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+    
+    private async Task HandleAddComment()
+    {
+        try
+        {
+            newComment.PostId = id;
+            var created = await CommentService.AddCommentAsync(id, newComment);
+            comments!.Add(created);
+            newComment = new() { Body = "", PostId = id, AuthorId = 1 };
+            message = "Comment added!";
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+        }
+    }
+}
