@@ -1,4 +1,5 @@
 ﻿@page "/post/{id:int}"
+@using System.Security.Claims
 @using ApiContracts
 @using BlazorApp.Services
 @using Entities
@@ -49,18 +50,25 @@ else
 }
 
 <div class="mt-6">
-    <h5 class="font-semibold mb-1">Add a comment:</h5>
-    <EditForm Model="@newComment" OnValidSubmit="HandleAddComment">
-        <InputTextArea @bind-Value="newComment.Body" class="border rounded p-2 w-full" placeholder="Write your comment..." /><br/>
-        <button type="submit" class="mt-2 btn btn-primary">
-            Add Comment
-        </button>
-    </EditForm>
+    <AuthorizeView Context="auth">
+        <Authorized>
+            <h5 class="font-semibold mb-1">Add a comment:</h5>
+            <EditForm Model="@newComment" OnValidSubmit="HandleAddComment">
+                <InputTextArea @bind-Value="newComment.Body" class="border rounded p-2 w-full" placeholder="Write your comment..." />
+                <br/>
+                <button type="submit" class="mt-2 btn btn-primary">Add Comment</button>
+            </EditForm>
 
-    @if (!string.IsNullOrEmpty(message))
-    {
-        <p class="mt-2">@message</p>
-    }
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <p class="mt-2">@message</p>
+            }
+        </Authorized>
+
+        <NotAuthorized>
+            <p class="text-red-600">You must be logged in to post a comment.</p>
+        </NotAuthorized>
+    </AuthorizeView>
 </div>
 
 @code {
@@ -68,13 +76,12 @@ else
 
     private Post? post;
     private bool loading = true;
-    
     private string? message;
     private string? errorMessage;
-    
     private List<CommentDTO>? comments;
     private CreateCommentDTO newComment = new() { Body = "", PostId = 0, AuthorId = 1 };
-
+    
+    [CascadingParameter] public Task<AuthenticationState> State { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,11 +104,26 @@ else
     {
         try
         {
+            AuthenticationState authState = await State;
+            ClaimsPrincipal user = authState.User;
+
+            if (!user.Identity?.IsAuthenticated ?? false)
+            {
+                message = "You must be logged in.";
+                return;
+            }
+
+            string userIdAsString = user.Claims.Single(c => c.Type == "Id").Value;
+            int userId = int.Parse(userIdAsString);
+
             newComment.PostId = id;
+            newComment.AuthorId = userId;
+
             var created = await CommentService.AddCommentAsync(id, newComment);
             comments!.Add(created);
-            newComment = new() { Body = "", PostId = id, AuthorId = 1 };
-            message = "Comment added!";
+
+            newComment = new() { Body = string.Empty, PostId = id, AuthorId = 0 };
+            message = "✅ Comment added!";
         }
         catch (Exception ex)
         {

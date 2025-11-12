@@ -28,6 +28,16 @@ public class UserFileRepository : IUserRepository
         return user;
     }
 
+    public async Task<User?> GetByUsernameAsync(string username)
+    {
+        string usersAsJson = await File.ReadAllTextAsync(filePath);
+        List<User> users = JsonSerializer.Deserialize<List<User>>(usersAsJson)!;
+
+        User? user = users.SingleOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+
+        return user;
+    }
+
     public async Task<User> GetSingleAsync(int id)
     {
         string usersAsJson = await File.ReadAllTextAsync(filePath);

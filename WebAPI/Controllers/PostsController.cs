@@ -42,12 +42,26 @@ public class PostsController : ControllerBase
             return NotFound(e.Message);
         }
     }
-
+    
     [HttpPost]
-    public async Task<ActionResult<Post>> Add([FromBody] Post post)
+    public async Task<ActionResult<PostDTO>> Add(CreatePostDTO dto)
     {
+        var post = new Post
+        {
+            Title = dto.Title,
+            Body = dto.Body,
+            UserId = dto.AuthorId   // ✅ Make sure this line uses AuthorId from DTO
+        };
+
         var created = await postRepo.AddPostAsync(post);
-        return Created($"/posts/{created.Id}", created);
+
+        return CreatedAtAction(nameof(GetSingle), new { id = created.Id }, new PostDTO
+        {
+            Id = created.Id,
+            Title = created.Title,
+            Body = created.Body,
+            AuthorId = created.UserId
+        });
     }
 
     [HttpDelete("{id:int}")]

@@ -1,30 +1,57 @@
 ﻿@page "/add-post"
+@using System.Security.Claims
 @using ApiContracts
 @using BlazorApp.Services
 @inject IPostService PostService
 
 <h3>Create Post</h3>
 
-<EditForm Model="@post" OnValidSubmit="HandleSubmit">
-    <InputText @bind-Value="post.Title" placeholder="Title" />
-    <br/>
-    <InputTextArea @bind-Value="post.Body" placeholder="Body" />
-    <br/>
-    <button type="submit">Add Post</button>
-</EditForm>
+<AuthorizeView Context="auth">
+    <Authorized>
+        <EditForm Model="@post" OnValidSubmit="HandleSubmit">
+            <InputText @bind-Value="post.Title" placeholder="Title" class="form-control" />
+            <br/>
+            <InputTextArea @bind-Value="post.Body" placeholder="Body" class="form-control" />
+            <br/>
+            <button type="submit" class="btn btn-primary">Add Post</button>
+        </EditForm>
 
-<p>@message</p>
+        <p>@message</p>
+    </Authorized>
+
+    <NotAuthorized>
+        <p class="text-red-600">You must be logged in to create a post.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private CreatePostDTO post = new() { Title = "", Body = "", AuthorId = 1 };
     private string message = "";
 
+    [CascadingParameter] public Task<AuthenticationState> State { get; set; }
+
+    
     private async Task HandleSubmit()
     {
         try
         {
+            AuthenticationState authState = await State;
+            ClaimsPrincipal user = authState.User;
+
+            if (!user.Identity?.IsAuthenticated ?? false)
+            {
+                message = "You must be logged in.";
+                return;
+            }
+
+            string userIdAsString = user.Claims.Single(c => c.Type == "Id").Value;
+            int userId = int.Parse(userIdAsString);
+
+            post.AuthorId = userId;
+
             var created = await PostService.AddPostAsync(post);
-            message = $"Post created with ID: {created.Id}";
+            message = $"✅ Post created successfully with ID: {created.Id}";
+            post = new() { Title = string.Empty, Body = string.Empty, AuthorId = 0 };
         }
         catch (Exception ex)
         {

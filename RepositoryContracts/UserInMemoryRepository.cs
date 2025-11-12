@@ -23,7 +23,12 @@ namespace RepositoryContracts
             users.Add(user);
             return Task.FromResult(user);
         }
-        
+
+        public Task<User?> GetByUsernameAsync(string username)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<User> GetSingleAsync(int id)
         { 
             User? userToFind = users.SingleOrDefault(p => p.Id == id);
