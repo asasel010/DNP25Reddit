@@ -8,12 +8,10 @@
 <AuthorizeView>
     <NotAuthorized>
         <div>
-            <label>User name:</label>
-            <input type="text" @bind="userName" class="form-control" />
-
-            <label>Password:</label>
-            <input type="password" @bind="password" class="form-control" />
-
+            <input type="text" placeholder="username" @bind="userName" class="form-control" />
+            <br/>
+            <input type="password" placeholder="password" @bind="password" class="form-control" />
+            <br/>
             @if (!string.IsNullOrEmpty(errorLabel))
             {
                 <p style="color:red">@errorLabel</p>

@@ -9,9 +9,9 @@
 <AuthorizeView Context="auth">
     <Authorized>
         <EditForm Model="@post" OnValidSubmit="HandleSubmit">
-            <InputText @bind-Value="post.Title" placeholder="Title" class="form-control" />
+            <InputText @bind-Value="post.Title" placeholder="title" class="form-control" />
             <br/>
-            <InputTextArea @bind-Value="post.Body" placeholder="Body" class="form-control" />
+            <InputTextArea @bind-Value="post.Body" placeholder="body" class="form-control" />
             <br/>
             <button type="submit" class="btn btn-primary">Add Post</button>
         </EditForm>

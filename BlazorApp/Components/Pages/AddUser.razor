@@ -6,11 +6,11 @@
 <h3>Add User</h3>
 
 <EditForm Model="@user" OnValidSubmit="HandleSubmit">
-    <InputText @bind-Value="user.Username" placeholder="Username" />
+    <InputText @bind-Value="user.Username" placeholder="username" class="form-control" />
     <br/>
-    <InputText @bind-Value="user.Password" type="password" placeholder="Password" />
+    <InputText @bind-Value="user.Password" type="password" placeholder="Password" class="form-control" />
     <br/>
-    <button type="submit">Register</button>
+    <button type="submit" class="btn btn-primary" >Register</button>
 </EditForm>
 
 <p>@message</p>
